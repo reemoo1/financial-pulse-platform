@@ -71,6 +71,44 @@ instead, so it works fully offline out of the box.
 4. Replace the functions in `lib/store.ts` with real queries — a reference
    snippet using `pg` is included as a comment at the bottom of that file.
 
+## Deploying it live (Vercel + Postgres)
+
+Local dev uses a JSON file for storage — fine for `localhost`, but most
+hosts (including Vercel) don't guarantee that file persists between
+requests. For a real deployed link, connect a Postgres database and the
+app will automatically switch to using it instead (see `lib/store.ts` —
+it checks for `DATABASE_URL` and routes accordingly, no code changes
+needed).
+
+**1. Create a free Postgres database**
+Easiest option: from your Vercel project dashboard → **Storage** tab →
+**Create Database** → **Postgres** (powered by Neon). This auto-generates
+a `DATABASE_URL` and adds it to your project's environment variables for
+you. Alternatives that work just as well: [neon.tech](https://neon.tech) or
+[supabase.com](https://supabase.com), both free tier — just copy their
+connection string into `DATABASE_URL` yourself if you go that route.
+
+**2. Create the reports table**
+Run `database/reports-table.sql` once against that database — either
+through your provider's built-in SQL editor (Vercel/Neon/Supabase all have
+one in their dashboard), or locally:
+```bash
+psql "$DATABASE_URL" -f database/reports-table.sql
+```
+
+**3. Deploy on Vercel**
+- Go to [vercel.com/new](https://vercel.com/new), sign in with GitHub
+- Import your `financial-pulse-platform` repo
+- If you created the database from within Vercel in step 1, `DATABASE_URL`
+  is already set. Otherwise, add it manually under **Settings → Environment
+  Variables**
+- (Optional) also add `OPENAI_API_KEY` there if you want real AI-generated
+  narratives instead of the template fallback
+- Click **Deploy**
+
+You'll get a live `https://your-project.vercel.app` link. Every future
+`git push` to `main` auto-deploys an update.
+
 ## Notes on the Excel parser
 
 The uploaded-statement parser (`extractFromWorkbookBuffer` in `lib/financial.ts`)

@@ -1,14 +1,18 @@
-// Demo persistence layer using a local JSON file via lowdb.
+// Persistence layer with two modes:
 //
-// This keeps the project runnable with zero setup (no database server
-// required). For production use with a real Saudi bank deployment, wire
-// these same function signatures to PostgreSQL using the schema in
-// database/schema.sql — see the commented example at the bottom of this
-// file for the query shapes you'd use with the `pg` package.
+// 1. Local JSON file (default) — zero setup, used automatically when no
+//    DATABASE_URL is set. Perfect for `npm run dev` on your own machine.
+//
+// 2. PostgreSQL (when DATABASE_URL is set) — required for any real
+//    deployment (Vercel, Railway, etc.), since those platforms don't
+//    guarantee the local filesystem persists between requests. Run
+//    database/reports-table.sql once against your Postgres instance to
+//    create the table this mode uses.
+//
+// The rest of the app (API routes) never needs to know which mode is
+// active — both saveReport()/getReport() have identical signatures.
 
-import { JSONFilePreset } from "lowdb/node";
 import { v4 as uuidv4 } from "uuid";
-import path from "path";
 import {
   StoredReport,
   ReportType,
@@ -16,27 +20,82 @@ import {
   StartupReportData,
 } from "./types";
 
+const USE_POSTGRES = !!process.env.DATABASE_URL;
+
+/* ------------------------------------------------------------------ *
+ * Postgres mode
+ * ------------------------------------------------------------------ */
+
+async function savePostgres(
+  type: ReportType,
+  data: CompanyReportData | StartupReportData
+): Promise<string> {
+  const pool = getPool();
+  const id = uuidv4();
+  await pool.query(
+    `INSERT INTO reports (id, type, created_at, data) VALUES ($1, $2, $3, $4)`,
+    [id, type, new Date().toISOString(), JSON.stringify(data)]
+  );
+  return id;
+}
+
+async function getPostgres(id: string): Promise<StoredReport | null> {
+  const pool = getPool();
+  const result = await pool.query(
+    `SELECT id, type, created_at, data FROM reports WHERE id = $1`,
+    [id]
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    type: row.type,
+    createdAt:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : row.created_at,
+    data: row.data,
+  };
+}
+
+let poolInstance: import("pg").Pool | null = null;
+function getPool(): import("pg").Pool {
+  if (!poolInstance) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Pool } = require("pg");
+    poolInstance = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // required by most managed Postgres hosts
+    });
+  }
+  return poolInstance;
+}
+
+/* ------------------------------------------------------------------ *
+ * Local JSON file mode
+ * ------------------------------------------------------------------ */
+
 interface DBSchema {
   reports: Record<string, StoredReport>;
 }
 
-const DB_PATH = path.join(process.cwd(), "data", "db.json");
+let dbPromise: Promise<any> | null = null;
 
-let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<DBSchema>>>> | null =
-  null;
-
-async function getDb() {
+async function getFileDb() {
   if (!dbPromise) {
+    const { JSONFilePreset } = await import("lowdb/node");
+    const path = await import("path");
+    const DB_PATH = path.join(process.cwd(), "data", "db.json");
     dbPromise = JSONFilePreset<DBSchema>(DB_PATH, { reports: {} });
   }
   return dbPromise;
 }
 
-export async function saveReport(
+async function saveFile(
   type: ReportType,
   data: CompanyReportData | StartupReportData
 ): Promise<string> {
-  const db = await getDb();
+  const db = await getFileDb();
   const id = uuidv4();
   const report: StoredReport = {
     id,
@@ -49,28 +108,22 @@ export async function saveReport(
   return id;
 }
 
-export async function getReport(id: string): Promise<StoredReport | null> {
-  const db = await getDb();
+async function getFile(id: string): Promise<StoredReport | null> {
+  const db = await getFileDb();
   return db.data.reports[id] ?? null;
 }
 
 /* ------------------------------------------------------------------ *
- * Production PostgreSQL reference (not active — uncomment & adapt):
- *
- * import { Pool } from "pg";
- * const pool = new Pool({ connectionString: process.env.DATABASE_URL });
- *
- * export async function saveReport(type, data) {
- *   const result = await pool.query(
- *     `INSERT INTO reports (company_id, startup_project_id, ai_summary_text)
- *      VALUES ($1, $2, $3) RETURNING id`,
- *     [data.companyId ?? null, data.startupProjectId ?? null, data.narrative]
- *   );
- *   return result.rows[0].id;
- * }
- *
- * export async function getReport(id) {
- *   const result = await pool.query(`SELECT * FROM reports WHERE id = $1`, [id]);
- *   return result.rows[0] ?? null;
- * }
+ * Public API — routes to whichever mode is active
  * ------------------------------------------------------------------ */
+
+export async function saveReport(
+  type: ReportType,
+  data: CompanyReportData | StartupReportData
+): Promise<string> {
+  return USE_POSTGRES ? savePostgres(type, data) : saveFile(type, data);
+}
+
+export async function getReport(id: string): Promise<StoredReport | null> {
+  return USE_POSTGRES ? getPostgres(id) : getFile(id);
+}
