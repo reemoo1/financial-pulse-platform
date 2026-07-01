@@ -118,3 +118,46 @@ export interface StoredReport {
   createdAt: string;
   data: CompanyReportData | StartupReportData;
 }
+
+/* ------------------------------------------------------------------ */
+/* Financing request / bank matching                                   */
+/* ------------------------------------------------------------------ */
+
+export interface Bank {
+  id: string;
+  name: string; // Arabic display name
+  minRate: number;
+  maxRate: number;
+  strengths: string; // short Arabic description
+}
+
+export interface PartnerBankQuote {
+  bank: Bank;
+  estimatedRate: number;
+  notes: string[]; // Arabic, short context notes for this specific applicant
+}
+
+export interface FinancingRequestInput {
+  reportId: string;
+  contactName: string;
+  phone: string;
+  email: string;
+  requestedAmount: number;
+  purpose: string;
+  termMonths: number;
+  notes: string;
+}
+
+export interface FinancingRequestRecord {
+  input: FinancingRequestInput;
+  applicantName: string;
+  applicantType: "company" | "startup";
+  sector: string;
+  bankQuote: PartnerBankQuote;
+}
+
+export interface StoredFinancingRequest {
+  id: string;
+  createdAt: string;
+  data: FinancingRequestRecord;
+}

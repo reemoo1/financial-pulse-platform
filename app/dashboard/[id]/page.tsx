@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import {
   Wallet,
   TrendingDown,
@@ -12,6 +13,7 @@ import {
   Target,
   Clock,
   Building2,
+  Landmark,
 } from "lucide-react";
 import RiskGauge from "@/components/RiskGauge";
 import KPICard from "@/components/KPICard";
@@ -61,7 +63,16 @@ export default function DashboardPage() {
             {new Date(report.createdAt).toLocaleString("ar-SA")}
           </p>
         </div>
-        <ExportToolbar report={report} targetRef={contentRef} />
+        <div className="flex flex-wrap gap-3">
+          <ExportToolbar report={report} targetRef={contentRef} />
+          <Link
+            href={`/financing-request/${params.id}`}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold-gradient text-fp-ink text-sm font-bold shadow-card hover:opacity-90 transition-opacity"
+          >
+            <Landmark className="w-4 h-4" />
+            تقديم طلب تمويل
+          </Link>
+        </div>
       </div>
 
       <div ref={contentRef} className="space-y-6 bg-fp-paper p-1">

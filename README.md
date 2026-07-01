@@ -109,6 +109,33 @@ psql "$DATABASE_URL" -f database/reports-table.sql
 You'll get a live `https://your-project.vercel.app` link. Every future
 `git push` to `main` auto-deploys an update.
 
+## Financing request & the partner bank model
+
+The platform positions النبض المالي as the intermediary between
+companies/startups and **one partner bank** — not a marketplace comparing
+multiple banks. From either dashboard, the **تقديم طلب تمويل** button leads
+to `/financing-request/[id]`, where the applicant sees:
+
+- The partner bank ("**البنك الشريك**" — a deliberate placeholder name, see
+  below), with an estimated interest rate tailored to their risk level
+  (`lib/banks.ts`'s `getPartnerBankQuote`)
+- A short explanation of the platform's role as intermediary — preparing
+  the applicant's financial data so the bank receives a ready-to-review
+  request
+- A form to actually submit the request
+
+**On the placeholder bank name:** "البنك الشريك" is intentionally generic
+rather than naming a specific real bank, since this is meant to be
+pitchable to *any* bank without implying a partnership that doesn't yet
+exist. If/when a real partnership is in place, update `PARTNER_BANK` in
+`lib/banks.ts` with the real name and adjust the rate range to match that
+bank's actual terms.
+
+Submitted requests are stored using the same `reports` table as everything
+else (just with `type = 'financing_request'`) — no extra database
+migration needed. After submitting, the applicant gets a confirmation
+screen with a downloadable PDF summary of their request.
+
 ## Notes on the Excel parser
 
 The uploaded-statement parser (`extractFromWorkbookBuffer` in `lib/financial.ts`)

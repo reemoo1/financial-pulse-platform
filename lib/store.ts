@@ -18,6 +18,8 @@ import {
   ReportType,
   CompanyReportData,
   StartupReportData,
+  StoredFinancingRequest,
+  FinancingRequestRecord,
 } from "./types";
 
 const USE_POSTGRES = !!process.env.DATABASE_URL;
@@ -26,9 +28,9 @@ const USE_POSTGRES = !!process.env.DATABASE_URL;
  * Postgres mode
  * ------------------------------------------------------------------ */
 
-async function savePostgres(
-  type: ReportType,
-  data: CompanyReportData | StartupReportData
+async function savePostgresRecord(
+  type: string,
+  data: unknown
 ): Promise<string> {
   const pool = getPool();
   const id = uuidv4();
@@ -39,7 +41,9 @@ async function savePostgres(
   return id;
 }
 
-async function getPostgres(id: string): Promise<StoredReport | null> {
+async function getPostgresRecord(
+  id: string
+): Promise<{ id: string; type: string; createdAt: string; data: any } | null> {
   const pool = getPool();
   const result = await pool.query(
     `SELECT id, type, created_at, data FROM reports WHERE id = $1`,
@@ -76,7 +80,7 @@ function getPool(): import("pg").Pool {
  * ------------------------------------------------------------------ */
 
 interface DBSchema {
-  reports: Record<string, StoredReport>;
+  reports: Record<string, { id: string; type: string; createdAt: string; data: any }>;
 }
 
 let dbPromise: Promise<any> | null = null;
@@ -91,24 +95,17 @@ async function getFileDb() {
   return dbPromise;
 }
 
-async function saveFile(
-  type: ReportType,
-  data: CompanyReportData | StartupReportData
-): Promise<string> {
+async function saveFileRecord(type: string, data: unknown): Promise<string> {
   const db = await getFileDb();
   const id = uuidv4();
-  const report: StoredReport = {
-    id,
-    type,
-    createdAt: new Date().toISOString(),
-    data,
-  };
-  db.data.reports[id] = report;
+  db.data.reports[id] = { id, type, createdAt: new Date().toISOString(), data };
   await db.write();
   return id;
 }
 
-async function getFile(id: string): Promise<StoredReport | null> {
+async function getFileRecord(
+  id: string
+): Promise<{ id: string; type: string; createdAt: string; data: any } | null> {
   const db = await getFileDb();
   return db.data.reports[id] ?? null;
 }
@@ -121,9 +118,39 @@ export async function saveReport(
   type: ReportType,
   data: CompanyReportData | StartupReportData
 ): Promise<string> {
-  return USE_POSTGRES ? savePostgres(type, data) : saveFile(type, data);
+  return USE_POSTGRES
+    ? savePostgresRecord(type, data)
+    : saveFileRecord(type, data);
 }
 
 export async function getReport(id: string): Promise<StoredReport | null> {
-  return USE_POSTGRES ? getPostgres(id) : getFile(id);
+  const record = USE_POSTGRES
+    ? await getPostgresRecord(id)
+    : await getFileRecord(id);
+  if (!record || (record.type !== "company" && record.type !== "startup")) {
+    return null;
+  }
+  return record as StoredReport;
+}
+
+// Financing requests reuse the exact same table/file as reports (it's
+// already a generic id/type/created_at/data store) — no separate migration
+// needed. Just a different `type` value and a typed wrapper for clarity.
+
+export async function saveFinancingRequest(
+  data: FinancingRequestRecord
+): Promise<string> {
+  return USE_POSTGRES
+    ? savePostgresRecord("financing_request", data)
+    : saveFileRecord("financing_request", data);
+}
+
+export async function getFinancingRequest(
+  id: string
+): Promise<StoredFinancingRequest | null> {
+  const record = USE_POSTGRES
+    ? await getPostgresRecord(id)
+    : await getFileRecord(id);
+  if (!record || record.type !== "financing_request") return null;
+  return { id: record.id, createdAt: record.createdAt, data: record.data };
 }
