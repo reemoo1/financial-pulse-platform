@@ -1,36 +1,72 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Landmark } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+
+function PulseLogo() {
+  return (
+    <span className="fp-logo-mark">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="4" fill="#0B1F3A" />
+        <path
+          d="M6 14h2.5l1.5-5 2.5 8 2-6 1.5 3H18"
+          stroke="#C9793B"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/bank") || pathname.startsWith("/inquiry")) return null;
+
   return (
-    <header className="sticky top-0 z-50 bg-fp-paper/90 backdrop-blur-md border-b border-black/5">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="font-heading text-2xl font-bold text-fp-green">
+    <header className="fp-nav">
+      <div className="fp-nav-inner">
+        <Link href="/" className="fp-nav-brand">
+          <PulseLogo />
+          <span className="font-heading font-bold text-sm sm:text-base text-[#0B1F3A] whitespace-nowrap">
             النبض المالي
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-fp-slate">
-          <Link href="/" className="hover:text-fp-green transition-colors">
+        <nav className="fp-nav-links">
+          <Link href="/" className="fp-nav-link">
             الرئيسية
           </Link>
-          <Link href="/start" className="hover:text-fp-green transition-colors">
+          <Link href="/start" className="fp-nav-link">
             المنصة
           </Link>
-          <Link href="/#pricing" className="hover:text-fp-green transition-colors">
-            الأسعار
+          <Link href="/#journey" className="fp-nav-link">
+            رحلة التمويل
           </Link>
-          <Link href="/#contact" className="hover:text-fp-green transition-colors">
-            تواصل معنا
+          <Link href="/#faq" className="fp-nav-link">
+            الأسئلة الشائعة
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/start"
-            className="hidden sm:inline-flex items-center px-5 py-2 rounded-full bg-green-gradient text-white text-sm font-semibold shadow-card hover:opacity-90 transition-opacity"
-          >
-            ابدأ التحليل
+        <div className="fp-nav-actions">
+          <Link href="/bank/login" className="fp-nav-secondary">
+            دخول البنك
+            <Landmark className="w-4 h-4" />
+          </Link>
+          <LanguageSwitcher />
+          <Link href="/start" className="fp-nav-primary hidden sm:inline-flex">
+            ابدأ طلب التمويل
           </Link>
         </div>
       </div>

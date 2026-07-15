@@ -20,9 +20,27 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS reports (
     id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    type       VARCHAR(20) NOT NULL,        -- 'company' | 'startup'
+    type       VARCHAR(20) NOT NULL,        -- app record type (company, startup, users, files, etc.)
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     data       JSONB NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_reports_created_at ON reports(created_at);
+
+-- Prevent duplicate identities even when two registration/bootstrap requests
+-- arrive at the same time. These are partial indexes because all record types
+-- share the same JSONB table in the current persistence model.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_reports_bank_user_email
+    ON reports ((lower(data->>'email')))
+    WHERE type = 'bank_user';
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_reports_company_user_cr
+    ON reports ((data->>'crNumber'))
+    WHERE type = 'company_user';
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_reports_company_user_email
+    ON reports ((lower(data->>'email')))
+    WHERE type = 'company_user' AND COALESCE(data->>'email', '') <> '';
+
+CREATE INDEX IF NOT EXISTS idx_reports_record_type
+    ON reports(type);

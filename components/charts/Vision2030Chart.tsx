@@ -30,15 +30,15 @@ export default function Vision2030Chart({ breakdown }: Props) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <RadarChart data={data}>
-        <PolarGrid stroke="#EFEFEC" />
+        <PolarGrid stroke="rgba(11, 31, 58, 0.1)" />
         <PolarAngleAxis dataKey="subject" fontSize={11} />
         <PolarRadiusAxis angle={30} domain={[0, 100]} fontSize={10} />
         <Radar
           name="التوافق"
           dataKey="value"
-          stroke="#C9A227"
-          fill="#C9A227"
-          fillOpacity={0.4}
+          stroke="#0B1F3A"
+          fill="#C9793B"
+          fillOpacity={0.35}
         />
         <Tooltip />
       </RadarChart>

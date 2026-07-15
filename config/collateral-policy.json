@@ -1,0 +1,38 @@
+{
+  "version": "COLLATERAL-POLICY-2026.2",
+  "coverage": {
+    "lowStrong": 0.0,
+    "lowBase": 0.75,
+    "mediumBase": 1.0,
+    "mediumElevated": 1.2,
+    "highBase": 1.3,
+    "highMax": 1.5
+  },
+  "thresholds": {
+    "strongDscr": 1.5,
+    "acceptableDscr": 1.25,
+    "weakDscr": 1.1,
+    "lowPd": 10,
+    "elevatedPd": 20,
+    "highDebtRatio": 0.65,
+    "veryHighDebtRatio": 0.75
+  },
+  "haircuts": {
+    "cash_deposit": 0.03,
+    "bank_guarantee": 0.05,
+    "kafalah": 0.2,
+    "real_estate": 0.25,
+    "equipment": 0.4,
+    "vehicle": 0.45,
+    "inventory": 0.55,
+    "receivables": 0.35,
+    "corporate_guarantee": 0.6,
+    "personal_guarantee": 0.75,
+    "promissory_note": 1.0
+  },
+  "notes": [
+    "مصدر السداد الأساسي هو التدفق النقدي، والضمان خط حماية ثانٍ عند التعثر.",
+    "القيم قابلة للتعديل من ملف سياسة البنك وليست نسباً تنظيمية ثابتة.",
+    "القيمة المؤهلة تطبق عليها نسبة تخفيض وتكاليف تسييل وحدود تركّز."
+  ]
+}

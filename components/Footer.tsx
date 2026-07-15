@@ -1,36 +1,43 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/bank") || pathname.startsWith("/inquiry")) return null;
+
   return (
-    <footer id="contact" className="bg-fp-ink text-white/70 mt-24">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer id="contact" className="fp-footer">
+      <div className="fp-footer-inner">
         <div>
-          <h3 className="font-heading text-xl text-white mb-3">النبض المالي</h3>
-          <p className="text-sm leading-relaxed">
-            منصة ذكاء اصطناعي لتحليل مخاطر التمويل المؤسسي للبنوك والجهات
-            التمويلية في المملكة العربية السعودية.
+          <h3 className="font-heading text-xl text-[#0B1F3A] mb-3">النبض المالي</h3>
+          <p className="text-sm leading-relaxed text-[#475569]">
+            منصة تمويل مؤسسية تساعد البنوك والجهات التمويلية على اتخاذ قرارات واضحة
+            ومبنية على بيانات — بشفافية ومساءلة في كل مرحلة.
           </p>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">روابط سريعة</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="/" className="hover:text-fp-gold">الرئيسية</a></li>
-            <li><a href="/start" className="hover:text-fp-gold">ابدأ التحليل</a></li>
-            <li><a href="/#pricing" className="hover:text-fp-gold">الأسعار</a></li>
+          <h4 className="text-[#0B1F3A] font-semibold mb-3">روابط سريعة</h4>
+          <ul className="space-y-2 text-sm text-[#475569]">
+            <li><a href="/" className="fp-footer-link">الرئيسية</a></li>
+            <li><a href="/start" className="fp-footer-link">ابدأ طلب التمويل</a></li>
+            <li><a href="/inquiry" className="fp-footer-link">الاستعلام عن المعاملة</a></li>
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">قانوني</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-fp-gold">سياسة الخصوصية</a></li>
-            <li><a href="#" className="hover:text-fp-gold">الشروط والأحكام</a></li>
+          <h4 className="text-[#0B1F3A] font-semibold mb-3">قانوني</h4>
+          <ul className="space-y-2 text-sm text-[#475569]">
+            <li><a href="#" className="fp-footer-link">سياسة الخصوصية</a></li>
+            <li><a href="/terms" className="fp-footer-link">الشروط والأحكام</a></li>
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">تواصل معنا</h4>
-          <p className="text-sm">info@financialpulse.sa</p>
-          <p className="text-sm">الرياض، المملكة العربية السعودية</p>
+          <h4 className="text-[#0B1F3A] font-semibold mb-3">تواصل معنا</h4>
+          <p className="text-sm text-[#475569]">info@financialpulse.sa</p>
+          <p className="text-sm text-[#475569]">الرياض، المملكة العربية السعودية</p>
         </div>
       </div>
-      <div className="border-t border-white/10 text-center text-xs py-4">
+      <div className="fp-footer-bottom">
         © {new Date().getFullYear()} النبض المالي. جميع الحقوق محفوظة.
       </div>
     </footer>

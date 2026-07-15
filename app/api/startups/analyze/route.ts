@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeStartup } from "@/lib/startup";
-import { saveReport } from "@/lib/store";
+import { saveReport, generateUniqueReferenceNumber } from "@/lib/store";
+
 import { StartupAnalysisInput } from "@/lib/types";
+import {
+  createReportAccessToken,
+  REPORT_ACCESS_COOKIE,
+  REPORT_ACCESS_MAX_AGE,
+} from "@/lib/auth";
+import { getCompanySession } from "@/lib/apiAuth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,14 +35,32 @@ export async function POST(req: NextRequest) {
       targetAudience: body.targetAudience || "",
     };
 
-    const reportData = analyzeStartup(input);
+    const companySession = getCompanySession(req);
+    const reportData = {
+      ...analyzeStartup(input),
+      _accessControl: companySession
+        ? { ownerCompanyId: companySession.companyId }
+        : undefined,
+      referenceNumber: await generateUniqueReferenceNumber(),
+    };
     const id = await saveReport("startup", reportData);
 
-    return NextResponse.json({ id });
+    const response = NextResponse.json(
+      { id },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+    response.cookies.set(REPORT_ACCESS_COOKIE, createReportAccessToken(id), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: REPORT_ACCESS_MAX_AGE,
+    });
+    return response;
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: "تعذر تحليل المشروع. يرجى المحاولة مرة أخرى." },
+      { error: "تعذر معالجة بيانات المشروع. يرجى المحاولة مرة أخرى." },
       { status: 500 }
     );
   }

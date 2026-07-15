@@ -1,7 +1,11 @@
-node_modules
-.next
-out
-data/db.json
+node_modules/
+.next/
 .env
 .env.local
+.env.*.local
+data/db.json
+uploads/
 *.log
+.DS_Store
+
+*.tsbuildinfo

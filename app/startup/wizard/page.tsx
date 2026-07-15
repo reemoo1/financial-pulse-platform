@@ -57,28 +57,28 @@ export default function StartupWizardPage() {
       if (!res.ok) throw new Error(json.error || "حدث خطأ");
       router.push(`/dashboard/${json.id}`);
     } catch (e: any) {
-      setError(e.message || "تعذر إتمام التحليل");
+      setError(e.message || "تعذر إتمام الطلب");
       setLoading(false);
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
-      <h1 className="font-heading text-2xl font-bold mb-2">تقييم فكرة مشروع جديد</h1>
-      <p className="text-fp-slate mb-8">
-        أجب عن الأسئلة التالية ليقوم الذكاء الاصطناعي بتقييم جدوى مشروعك
+    <div className="portal-page max-w-2xl">
+      <h1 className="font-heading text-2xl font-bold mb-2 text-[#0F172A]">تقييم فكرة مشروع جديد</h1>
+      <p className="text-[#475569] mb-8">
+        أجب عن الأسئلة التالية لتقييم جدوى مشروعك وفرص التمويل المتاحة.
       </p>
 
       <WizardStepper steps={STEPS} current={step} />
 
-      <div className="bg-white rounded-2xl p-6 md:p-8 shadow-card border border-black/5 space-y-5">
+      <div className="portal-form-card space-y-5 md:p-8">
         {step === 0 && (
           <>
             <Field label="اسم المشروع">
               <input
                 value={form.projectName}
                 onChange={(e) => update("projectName", e.target.value)}
-                className="input"
+                className="fp-input"
                 placeholder="مثال: منصة توصيل ذكية"
               />
             </Field>
@@ -86,7 +86,7 @@ export default function StartupWizardPage() {
               <textarea
                 value={form.ideaDescription}
                 onChange={(e) => update("ideaDescription", e.target.value)}
-                className="input min-h-[100px]"
+                className="fp-input min-h-[100px]"
                 placeholder="اشرح فكرة المشروع بإيجاز"
               />
             </Field>
@@ -95,7 +95,7 @@ export default function StartupWizardPage() {
                 <select
                   value={form.sector}
                   onChange={(e) => update("sector", e.target.value)}
-                  className="input bg-white"
+                  className="fp-input bg-white"
                 >
                   {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -104,7 +104,7 @@ export default function StartupWizardPage() {
                 <input
                   value={form.city}
                   onChange={(e) => update("city", e.target.value)}
-                  className="input"
+                  className="fp-input"
                   placeholder="مثال: جدة"
                 />
               </Field>
@@ -120,7 +120,7 @@ export default function StartupWizardPage() {
                   type="number"
                   value={form.currentCapital || ""}
                   onChange={(e) => update("currentCapital", Number(e.target.value))}
-                  className="input"
+                  className="fp-input"
                 />
               </Field>
               <Field label="الميزانية المتوقعة (ريال)">
@@ -128,7 +128,7 @@ export default function StartupWizardPage() {
                   type="number"
                   value={form.expectedBudget || ""}
                   onChange={(e) => update("expectedBudget", Number(e.target.value))}
-                  className="input"
+                  className="fp-input"
                 />
               </Field>
             </div>
@@ -137,14 +137,14 @@ export default function StartupWizardPage() {
                 type="number"
                 value={form.employeeCount || ""}
                 onChange={(e) => update("employeeCount", Number(e.target.value))}
-                className="input"
+                className="fp-input"
               />
             </Field>
             <Field label="مصادر الدخل">
               <textarea
                 value={form.revenueSources}
                 onChange={(e) => update("revenueSources", e.target.value)}
-                className="input"
+                className="fp-input"
                 placeholder="مثال: اشتراكات شهرية، عمولة على المبيعات"
               />
             </Field>
@@ -152,7 +152,7 @@ export default function StartupWizardPage() {
               <textarea
                 value={form.expenses}
                 onChange={(e) => update("expenses", e.target.value)}
-                className="input"
+                className="fp-input"
                 placeholder="مثال: رواتب، تسويق، تشغيل"
               />
             </Field>
@@ -165,7 +165,7 @@ export default function StartupWizardPage() {
               <textarea
                 value={form.goals}
                 onChange={(e) => update("goals", e.target.value)}
-                className="input"
+                className="fp-input"
                 placeholder="ما الذي تطمح لتحقيقه خلال السنة الأولى؟"
               />
             </Field>
@@ -173,20 +173,20 @@ export default function StartupWizardPage() {
               <textarea
                 value={form.targetAudience}
                 onChange={(e) => update("targetAudience", e.target.value)}
-                className="input"
+                className="fp-input"
                 placeholder="من هم عملاؤك المستهدفون؟"
               />
             </Field>
           </>
         )}
 
-        {error && <p className="text-sm text-risk-high">{error}</p>}
+        {error && <p className="portal-error">{error}</p>}
 
         <div className="flex justify-between pt-2">
           <button
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0 || loading}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-medium text-fp-slate hover:bg-black/5 disabled:opacity-0 transition-colors"
+            className="portal-secondary-btn px-5 py-2.5 text-sm disabled:opacity-0"
           >
             <ArrowRight className="w-4 h-4" />
             السابق
@@ -195,7 +195,7 @@ export default function StartupWizardPage() {
           {step < STEPS.length - 1 ? (
             <button
               onClick={() => validateStep() && setStep((s) => s + 1)}
-              className="flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-green-gradient text-white text-sm font-semibold shadow-card hover:opacity-90 transition-opacity"
+              className="portal-primary-btn px-6 py-2.5 text-sm"
             >
               التالي
               <ArrowLeft className="w-4 h-4" />
@@ -204,27 +204,14 @@ export default function StartupWizardPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-green-gradient text-white text-sm font-semibold shadow-card hover:opacity-90 transition-opacity disabled:opacity-60"
+              className="portal-primary-btn px-6 py-2.5 text-sm disabled:opacity-60"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? "جاري التحليل..." : "إنهاء وتحليل المشروع"}
+              {loading ? "جاري المعالجة..." : "إنهاء وتقييم فرصة التمويل"}
             </button>
           )}
         </div>
       </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          padding: 0.625rem 1rem;
-          border-radius: 0.5rem;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .input:focus {
-          outline: none;
-          border-color: #0b3d2e;
-        }
-      `}</style>
     </div>
   );
 }
@@ -232,7 +219,7 @@ export default function StartupWizardPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-1.5">{label}</label>
+      <label className="block text-sm font-medium mb-1.5 text-[#0F172A]">{label}</label>
       {children}
     </div>
   );

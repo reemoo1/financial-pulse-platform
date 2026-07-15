@@ -1,0 +1,8 @@
+بوابة الشركات
+==============
+1) افتحي Terminal داخل هذا المجلد.
+2) اكتبي: npm install
+3) اكتبي: cp .env.example .env.local
+4) ضعي نفس DATABASE_URL المستخدم في بوابة البنك داخل .env.local
+5) اكتبي: npm run dev
+6) افتحي: http://localhost:3000

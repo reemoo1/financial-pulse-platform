@@ -1,23 +1,14 @@
 import type { Metadata } from "next";
-import { Tajawal, Noto_Kufi_Arabic } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LanguageProvider from "@/components/LanguageProvider";
 
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["300", "400", "500", "700", "900"],
-  variable: "--font-tajawal",
-});
+export const dynamic = "force-dynamic";
 
-const kufi = Noto_Kufi_Arabic({
-  subsets: ["arabic"],
-  weight: ["400", "600", "700"],
-  variable: "--font-kufi",
-});
 
 export const metadata: Metadata = {
-  title: "النبض المالي | منصة تحليل مخاطر التمويل المؤسسي",
+  title: "النبض المالي | بوابة الشركات",
   description:
     "كل قرض خاطئ يكلف البنك ملايين — النبض المالي يرصد المخاطر قبل أن تقع",
 };
@@ -28,11 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`${tajawal.variable} ${kufi.variable}`}>
-      <body className="min-h-screen bg-fp-paper text-fp-ink flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <body className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col">
+        <LanguageProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -31,14 +31,18 @@ function buildCompanyPrompt(data: Omit<CompanyReportData, "narrative">): string 
 
 اسم الشركة: ${data.companyName}
 القطاع: ${data.sector}
-نسبة السيولة: ${data.ratios.liquidityRatio}
-نسبة المديونية: ${data.ratios.debtRatio}
-هامش الربح: ${(data.ratios.profitMargin * 100).toFixed(1)}%
-احتمالية التعثر: ${data.risk.defaultProbability}%
+نسبة السيولة: ${formatTimes(data.ratios.currentRatio)}
+نسبة المديونية: ${formatPercent(data.ratios.debtRatio)}
+هامش الربح: ${formatPercent(data.ratios.netProfitMargin)}
+درجة الصحة المالية: ${data.risk.healthScore ?? 100 - data.risk.defaultProbability} من 100
+احتمال التعثر التقديري خلال 12 شهراً: ${formatProbability(data.risk.defaultProbability)}
 مستوى المخاطر: ${data.risk.riskLevel}
 توافق رؤية 2030: ${data.vision2030.score}%
+جودة بيانات أثر رؤية 2030: ${data.vision2030.details?.dataQuality ?? 0}%
 التمويل الموصى به: ${data.funding.amount.toLocaleString("ar-SA")} ريال
 نسبة الفائدة المقترحة: ${data.funding.interestRate}%
+القيد المحدد لمبلغ التمويل: ${data.funding.calculation?.bindingConstraint ?? "غير متوفر"}
+DSCR المستهدف: ${formatTimes(data.funding.calculation?.targetDscr)}
 التوصية: ${data.funding.recommendationText}`;
 }
 
@@ -54,13 +58,16 @@ function buildCompanyTemplateNarrative(
 
   return (
     `تُظهر البيانات المالية لشركة "${data.companyName}" العاملة في قطاع ${data.sector} مستوى مخاطر ${riskLabel} ` +
-    `باحتمالية تعثر تقدر بـ ${data.risk.defaultProbability}%. ` +
-    `تبلغ نسبة السيولة ${data.ratios.liquidityRatio} ونسبة المديونية ${data.ratios.debtRatio}، ` +
-    `بهامش ربح يقارب ${(data.ratios.profitMargin * 100).toFixed(1)}%. ` +
-    `يحقق النشاط توافقاً مع مستهدفات رؤية 2030 بنسبة ${data.vision2030.score}%. ` +
+    `بدرجة صحة مالية تبلغ ${data.risk.healthScore ?? 100 - data.risk.defaultProbability} من 100. ` +
+    `ويبلغ احتمال التعثر التقديري خلال 12 شهراً ${formatProbability(data.risk.defaultProbability)} وفق نموذج دعم القرار المالي. ` +
+    `تبلغ نسبة السيولة ${formatTimes(data.ratios.currentRatio)} ونسبة المديونية ${formatPercent(data.ratios.debtRatio)}، ` +
+    `بهامش ربح يقارب ${formatPercent(data.ratios.netProfitMargin)}. ` +
+    `يحقق النشاط توافقاً مع مستهدفات رؤية 2030 بنسبة ${data.vision2030.score}%، بجودة بيانات فعلية تبلغ ${data.vision2030.details?.dataQuality ?? 0}%. ` +
     `بناءً على هذه المؤشرات، يوصى بتمويل بقيمة ${data.funding.amount.toLocaleString(
       "ar-SA"
-    )} ريال بفائدة ${data.funding.interestRate}%، مع التوصية التالية: ${
+    )} ريال بفائدة ${data.funding.interestRate}%، ويُحدد المبلغ بواسطة ${
+      data.funding.calculation?.bindingConstraint ?? "أدنى حدود القدرة المتاحة"
+    }. التوصية: ${
       data.funding.recommendationText
     }.`
   );
@@ -88,4 +95,20 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<string> {
   const text = json?.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty OpenAI response");
   return text.trim();
+}
+
+
+function formatTimes(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "غير متوفر";
+  return `${value.toLocaleString("ar-SA", { maximumFractionDigits: 2 })} مرة`;
+}
+
+function formatPercent(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "غير متوفر";
+  return `${(value * 100).toLocaleString("ar-SA", { maximumFractionDigits: 1 })}%`;
+}
+
+function formatProbability(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "غير متوفر";
+  return `${value.toLocaleString("ar-SA", { maximumFractionDigits: 1 })}%`;
 }

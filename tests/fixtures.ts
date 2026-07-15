@@ -1,0 +1,51 @@
+import { ExtractedFinancials } from "../lib/types";
+
+export const completeFinancials: ExtractedFinancials = {
+  totalAssets: 10_000_000,
+  currentAssets: 4_000_000,
+  cash: 800_000,
+  inventory: 500_000,
+  accountsReceivable: 1_000_000,
+  totalLiabilities: 4_000_000,
+  currentLiabilities: 2_000_000,
+  shortTermDebt: 500_000,
+  longTermDebt: 2_000_000,
+  equity: 6_000_000,
+  retainedEarnings: 2_000_000,
+  revenue: 12_000_000,
+  costOfGoodsSold: 7_000_000,
+  grossProfit: 5_000_000,
+  operatingExpenses: 3_000_000,
+  operatingIncome: 2_000_000,
+  netIncome: 1_400_000,
+  interestExpense: 200_000,
+  zakatTax: 400_000,
+  depreciation: 300_000,
+  amortization: 100_000,
+  operatingCashFlow: 2_400_000,
+  investingCashFlow: -600_000,
+  financingCashFlow: -500_000,
+  netCashFlow: 1_300_000,
+  endingCashBalance: 2_100_000,
+  cfads: 2_000_000,
+  maintenanceCapex: 400_000,
+  scheduledPrincipal: 500_000,
+  scheduledInterest: 200_000,
+  mandatoryDebtFees: 0,
+  financeLeasePayments: 100_000,
+};
+
+export function withoutBankingSupplement(): ExtractedFinancials {
+  return {
+    ...completeFinancials,
+    retainedEarnings: null,
+    depreciation: null,
+    amortization: null,
+    cfads: null,
+    maintenanceCapex: null,
+    scheduledPrincipal: null,
+    scheduledInterest: null,
+    mandatoryDebtFees: null,
+    financeLeasePayments: null,
+  };
+}
