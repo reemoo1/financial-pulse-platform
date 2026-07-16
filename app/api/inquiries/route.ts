@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  verifyFinancingRequestOtpAttempt,
-  getFinancingRequestByReferenceNumber,
-} from "@/lib/store";
-import { normalizeOtp } from "@/lib/otp";
+import { getFinancingRequestByReferenceNumber } from "@/lib/store";
 import { publicFileSummary } from "@/lib/fileUpload";
 import { FINANCING_STATUS_LABELS } from "@/lib/financingLifecycle";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
@@ -24,13 +20,12 @@ export async function POST(req: NextRequest) {
   if ("retryAfter" in ipLimit) return rateLimitResponse(ipLimit.retryAfter);
 
   try {
-    const { inquiryNumber, otp } = await req.json();
+    const { inquiryNumber } = await req.json();
     const cleanInquiryNumber = String(inquiryNumber || "").trim();
-    const cleanOtp = normalizeOtp(String(otp || ""));
 
-    if (!cleanInquiryNumber || cleanOtp.length !== 6) {
+    if (!cleanInquiryNumber) {
       return NextResponse.json(
-        { error: "يرجى إدخال رقم الاستعلام ورمز OTP بشكل صحيح" },
+        { error: "يرجى إدخال رقم الاستعلام" },
         { status: 400, headers: { "Cache-Control": "no-store" } },
       );
     }
@@ -45,38 +40,10 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse(ticketLimit.retryAfter);
     }
 
-    const matchedRequest = await getFinancingRequestByReferenceNumber(
+    const request = await getFinancingRequestByReferenceNumber(
       cleanInquiryNumber,
     );
-    console.log("[inquiry-verify-lookup]", {
-      cleanInquiryNumber,
-      cleanOtp,
-      found: Boolean(matchedRequest),
-    });
-    if (!matchedRequest) return invalidCredentials();
-
-    const verification = await verifyFinancingRequestOtpAttempt(
-      matchedRequest.id,
-      cleanOtp,
-    );
-    console.log("[inquiry-verify-result]", {
-      status: verification.status,
-    });
-    if (verification.status === "locked") {
-      return NextResponse.json(
-        { error: "تم إيقاف رمز التحقق بعد تجاوز عدد المحاولات المسموح" },
-        { status: 423, headers: { "Cache-Control": "no-store" } },
-      );
-    }
-    if (verification.status === "expired") {
-      return NextResponse.json(
-        { error: "انتهت صلاحية رمز التحقق. يرجى إنشاء طلب جديد." },
-        { status: 410, headers: { "Cache-Control": "no-store" } },
-      );
-    }
-    if (verification.status !== "ok") return invalidCredentials();
-
-    const request = verification.request;
+    if (!request) return invalidCredentials();
     const metadata = request.data.metadata || {};
     const collateral = request.data.collateral;
     const lockedCollateralStatuses = new Set([
@@ -238,7 +205,7 @@ export async function POST(req: NextRequest) {
 
 function invalidCredentials() {
   return NextResponse.json(
-    { error: "رقم الاستعلام أو رمز OTP غير صحيح" },
+    { error: "رقم الاستعلام غير صحيح" },
     { status: 401, headers: { "Cache-Control": "no-store" } },
   );
 }

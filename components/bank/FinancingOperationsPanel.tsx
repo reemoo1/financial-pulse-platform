@@ -130,7 +130,7 @@ export default function FinancingOperationsPanel({
         onSubmit={(payload) => submit("record_disbursement", payload)}
       />
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="bank-card p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-3 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <div className="bank-icon-box h-12 w-12">
@@ -157,7 +157,7 @@ export default function FinancingOperationsPanel({
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="bank-card p-5 shadow-sm sm:p-6">
         <div className="mb-5 flex items-start gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-700">
             <ShieldAlert className="h-6 w-6" />
@@ -227,7 +227,7 @@ function DisbursementSection({
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="bank-card p-5 shadow-sm sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <SectionTitle
           icon={Banknote}
@@ -925,7 +925,7 @@ function InstallmentBadge({ status }: { status: FinancingInstallment["status"] }
     partial: ["سداد جزئي", "border-amber-200 bg-amber-50 text-amber-700"],
     paid: ["مسدد", "border-emerald-200 bg-emerald-50 text-emerald-700"],
     late: ["متأخر", "border-rose-200 bg-rose-50 text-rose-700"],
-    waived: ["معفى", "border-violet-200 bg-violet-50 text-violet-700"],
+    waived: ["معفى", "border-[#D9E2EC] bg-[#F8FAFC] text-[#64748B]"],
   };
   const [label, cls] = config[status] || [status || "—", "border-slate-200 bg-slate-50 text-slate-600"];
   return <span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold ${cls}`}>{label}</span>;

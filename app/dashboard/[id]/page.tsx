@@ -180,7 +180,7 @@ function CompanyDashboard({
   return (
     <>
       {/* الطبقة الأولى: النتيجة التي يحتاجها صاحب الشركة خلال أول ثوانٍ */}
-      <section className="overflow-hidden rounded-3xl border border-[#D9E2EC] bg-white">
+      <section className="overflow-hidden rounded-2xl border border-[#D9E2EC] bg-white">
         <div className="bg-gradient-to-b from-[#F8FAFC] to-white px-5 py-7 sm:px-8 sm:py-9">
           <div className="mb-3 flex items-center justify-center gap-2 text-center">
             <Building2 className="h-5 w-5 text-[#0B1F3A]" />

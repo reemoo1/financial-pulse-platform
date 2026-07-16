@@ -106,7 +106,7 @@ export default function CompanyCollateralSubmission({
 
   return (
     <div className="space-y-6" dir="rtl">
-      <section className="rounded-3xl bg-[#071a2f] text-white p-6 md:p-8">
+      <section className="fp-hero-band p-6 md:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">

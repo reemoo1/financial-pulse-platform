@@ -83,7 +83,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <div className="flex flex-wrap gap-2"><RiskBadge risk={profile.risk} /><StatusBadge status={request.data.status} /></div>
         </div>
 
-        <section className="relative overflow-hidden rounded-3xl bg-[#0B1F3A] p-6 text-white lg:p-8">
+        <section className="fp-hero-band relative p-6 lg:p-8">
           <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-[#C9793B]/10 blur-3xl" />
           <div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center">
             <div className="flex items-start gap-4">
@@ -136,7 +136,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             )}
 
             <section className="bank-card p-6">
-              <div className="flex items-center justify-between gap-3"><div><h2 className="font-bold">ملخص الذكاء الائتماني</h2><p className="mt-1 text-xs text-slate-500">تفسير للنتائج المحسوبة، وليس قرارًا مستقلًا عن الموظف</p></div><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600"><Bot className="h-5 w-5" /></div></div>
+              <div className="flex items-center justify-between gap-3"><div><h2 className="font-bold">ملخص الذكاء الائتماني</h2><p className="mt-1 text-xs text-slate-500">تفسير للنتائج المحسوبة، وليس قرارًا مستقلًا عن الموظف</p></div><div className="flex h-10 w-10 items-center justify-center rounded-xl bank-icon-box"><Bot className="h-5 w-5" /></div></div>
               <p className="mt-5 text-sm leading-7 text-slate-700">{company?.narrative || startup?.narrative || `تم تحليل طلب ${request.data.applicantName} وترتيب المخاطر وفق البيانات المتاحة.`}</p>
               <div className="mt-5 grid gap-3 md:grid-cols-1"><Insight tone="good" title="نقطة القوة" text={strengthText(company)} /></div>
             </section>

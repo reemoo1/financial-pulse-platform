@@ -148,7 +148,7 @@ export default function BankShell({
       </aside>
 
       <div className="lg:pr-72">
-        <header className="sticky top-0 z-20 border-b border-[#D9E2EC] bg-white px-4 py-4 sm:px-7">
+        <header className="fp-nav sticky top-0 z-20 border-b border-[#D9E2EC] bg-white px-4 py-4 sm:px-7">
           <div className="mx-auto flex max-w-7xl items-center gap-4">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D9E2EC] bg-white lg:hidden"

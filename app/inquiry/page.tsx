@@ -98,51 +98,16 @@ type InquiryResult = {
 
 export default function InquiryPage() {
   const [inquiryNumber, setInquiryNumber] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"number" | "otp">("number");
-  const [sendingOtp, setSendingOtp] = useState(false);
-  const [otpMessage, setOtpMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<InquiryResult | null>(null);
-
-  async function handleSendOtp() {
-    setError("");
-    setOtpMessage("");
-
-    if (!inquiryNumber.trim()) {
-      setError("يرجى إدخال رقم الاستعلام");
-      return;
-    }
-
-    setSendingOtp(true);
-    try {
-      const res = await fetch("/api/inquiries/request-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inquiryNumber }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "تعذر إرسال رمز التحقق");
-      setOtpMessage(
-        json.message || "تم إرسال رمز التحقق إلى بريدك الإلكتروني المسجل.",
-      );
-      setStep("otp");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "تعذر إرسال رمز التحقق",
-      );
-    } finally {
-      setSendingOtp(false);
-    }
-  }
 
   async function handleInquiry() {
     setError("");
     setResult(null);
 
-    if (!inquiryNumber.trim() || otp.replace(/\D/g, "").length !== 6) {
-      setError("يرجى إدخال رمز OTP المكوّن من 6 أرقام");
+    if (!inquiryNumber.trim()) {
+      setError("يرجى إدخال رقم الاستعلام");
       return;
     }
 
@@ -151,7 +116,7 @@ export default function InquiryPage() {
       const res = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inquiryNumber, otp }),
+        body: JSON.stringify({ inquiryNumber }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "تعذر تنفيذ الاستعلام");
@@ -183,10 +148,8 @@ export default function InquiryPage() {
               type="button"
               onClick={() => {
                 setResult(null);
-                setStep("number");
-                setOtp("");
+                setInquiryNumber("");
                 setError("");
-                setOtpMessage("");
               }}
               className="portal-secondary-btn text-sm"
             >
@@ -326,121 +289,44 @@ export default function InquiryPage() {
   return (
     <AuthShell
       portalLabel="النبض المالي — متابعة الطلب"
-      headline="تابع طلب التمويل بأمان عبر رقم المعاملة ورمز التحقق المرسل إلى بريدك."
+      headline="تابع طلب التمويل بأمان عبر رقم الاستعلام."
       features={[
         "لا حاجة لإنشاء حساب أو كلمة مرور",
-        "التحقق برمز OTP لمرة واحدة عبر البريد المسجل",
         "عرض القرار والضمانات والصرف في مكان واحد",
         "رفع المتابعة الشهرية بعد الموافقة والصرف",
       ]}
-      steps={[
-        {
-          label: "رقم المعاملة",
-          state: step === "number" ? "current" : "done",
-        },
-        {
-          label: "رمز التحقق",
-          state: step === "otp" ? "current" : "upcoming",
-        },
-      ]}
-      panelTitle={step === "number" ? "أدخل رقم المعاملة" : "أدخل رمز التحقق"}
-      panelSubtitle={
-        step === "number"
-          ? "استخدم الرقم الذي استلمته بعد تقديم طلب التمويل."
-          : "أدخل الرمز المكوّن من 6 أرقام المرسل إلى بريدك الإلكتروني."
-      }
-      footer={
-        step === "otp" ? (
-          <div className="flex items-center justify-between gap-3 text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setStep("number");
-                setOtp("");
-                setError("");
-              }}
-              className="portal-link text-xs"
-            >
-              تغيير رقم الاستعلام
-            </button>
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              disabled={sendingOtp}
-              className="portal-link text-xs disabled:opacity-60"
-            >
-              {sendingOtp ? "جاري إعادة الإرسال..." : "إعادة إرسال الرمز"}
-            </button>
-          </div>
-        ) : undefined
-      }
+      panelTitle="أدخل رقم الاستعلام"
+      panelSubtitle="استخدم الرقم الذي استلمته بعد تقديم طلب التمويل."
     >
-      {step === "number" ? (
-        <>
-          <label>
-            <span className="auth-field-label">رقم الاستعلام</span>
-            <input
-              value={inquiryNumber}
-              onChange={(event) => setInquiryNumber(event.target.value)}
-              className="fp-input"
-              placeholder="مثال: رقم التذكرة"
-            />
-          </label>
+      <label>
+        <span className="auth-field-label">رقم الاستعلام</span>
+        <input
+          value={inquiryNumber}
+          onChange={(event) => setInquiryNumber(event.target.value)}
+          className="fp-input"
+          placeholder="مثال: رقم التذكرة"
+        />
+      </label>
 
-          {error && <div className="auth-alert mt-4">{error}</div>}
+      {error && <div className="auth-alert mt-4">{error}</div>}
 
-          <button
-            onClick={handleSendOtp}
-            disabled={sendingOtp}
-            className="portal-primary-btn mt-5 w-full disabled:opacity-60"
-          >
-            {sendingOtp ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-            {sendingOtp ? "جاري الإرسال..." : "إرسال رمز التحقق"}
-          </button>
+      <button
+        onClick={handleInquiry}
+        disabled={loading}
+        className="portal-primary-btn mt-5 w-full disabled:opacity-60"
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Search className="h-4 w-4" />
+        )}
+        {loading ? "جاري الاستعلام..." : "فتح متابعة الطلب"}
+      </button>
 
-          <div className="auth-trust-row">
-            <ShieldCheck className="h-4 w-4" />
-            <span>لن يُعرض أي محتوى قبل التحقق من رقم المعاملة ورمز OTP.</span>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="auth-note">{otpMessage || "تم إرسال رمز التحقق إلى بريدك الإلكتروني المسجل."}</div>
-
-          <label className="mt-4 block">
-            <span className="auth-field-label">رمز OTP</span>
-            <input
-              value={otp}
-              onChange={(event) =>
-                setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))
-              }
-              className="fp-input auth-otp-input"
-              inputMode="numeric"
-              placeholder="000000"
-              autoFocus
-            />
-          </label>
-
-          {error && <div className="auth-alert mt-4">{error}</div>}
-
-          <button
-            onClick={handleInquiry}
-            disabled={loading}
-            className="portal-primary-btn mt-5 w-full disabled:opacity-60"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-            {loading ? "جاري الاستعلام..." : "فتح متابعة الطلب"}
-          </button>
-        </>
-      )}
+      <div className="auth-trust-row">
+        <ShieldCheck className="h-4 w-4" />
+        <span>لن يُعرض أي محتوى قبل التحقق من رقم الاستعلام.</span>
+      </div>
     </AuthShell>
   );
 }

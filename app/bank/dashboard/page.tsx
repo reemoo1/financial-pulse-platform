@@ -71,7 +71,7 @@ export default async function BankDashboardPage() {
           <Stat icon={TrendingUp} label="نسبة التعثر المتوقعة" value={`${averagePd.toFixed(1)}%`} note="متوسط PD للمحفظة" />
         </section>
 
-        <SmartAlertsPanel alerts={portfolioAlerts} title="تنبيهات المحفظة" className="bank-card !p-5" />
+        <SmartAlertsPanel alerts={portfolioAlerts} title="تنبيهات المحفظة" className="bank-card p-5" />
 
         <section className="grid gap-4 sm:grid-cols-2">
           <Stat icon={FileText} label="إجمالي الطلبات" value={String(rows.length)} note={`${pending} طلبات تحتاج مراجعة`} />
@@ -114,6 +114,6 @@ export default async function BankDashboardPage() {
 }
 
 function priorityScore(row: { request: StoredFinancingRequest; profile: ReturnType<typeof deriveRequestProfile> }) { const { request, profile } = row; return (request.data.status === "defaulted" ? 120 : request.data.status === "warning" ? 90 : 0) + profile.pd + profile.warning + (["bank_review", "submitted", "under_review"].includes(request.data.status) ? 20 : 0); }
-function Stat({ icon: Icon, label, value, note }: { icon:any; label:string; value:string; note:string }) { return <div className="bank-card p-5"><div className="bank-icon-box h-11 w-11"><Icon className="h-5 w-5" /></div><p className="mt-4 text-xs text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold">{value}</p><p className="mt-2 text-[10px] text-slate-400">{note}</p></div>; }
+function Stat({ icon: Icon, label, value, note }: { icon:any; label:string; value:string; note:string }) { return <div className="bank-card fp-card p-5"><div className="fp-icon-box h-11 w-11"><Icon className="h-5 w-5" /></div><p className="mt-4 text-xs text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold">{value}</p><p className="mt-2 text-[10px] text-slate-400">{note}</p></div>; }
 function RiskLine({ label, value, total, tone }: { label:string; value:number; total:number; tone:"low"|"medium"|"high" }) { const width = total ? Math.max(4, value / total * 100) : 0; const cls = tone === "low" ? "bg-emerald-500" : tone === "high" ? "bg-rose-500" : "bg-amber-500"; return <div><div className="flex items-center justify-between text-xs"><span>{label}</span><strong>{value}</strong></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${cls}`} style={{ width: `${width}%` }} /></div></div>; }
 function Empty() { return <div className="p-12 text-center"><FileText className="mx-auto h-8 w-8 text-slate-300" /><p className="mt-3 text-sm text-slate-500">لا توجد طلبات تمويل بعد.</p></div>; }

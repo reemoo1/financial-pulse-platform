@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   Banknote,
-  CheckCircle2,
   ChevronDown,
   Clock,
   FileSearch,
@@ -33,24 +32,11 @@ const benefits = [
   { title: "رحلة تمويل واضحة", text: "أربع مراحل أساسية من التقديم حتى الإغلاق.", icon: Landmark },
 ];
 
-const previewMetrics = [
-  { label: "نسبة تغطية الدين", value: "1.42", status: "مستقر" },
-  { label: "السيولة الجارية", value: "1.18", status: "مقبول" },
-  { label: "احتمال التعثر", value: "12%", status: "منخفض" },
-];
-
-const previewTimeline = [
-  { label: "التقديم", state: "done" },
-  { label: "التحليل", state: "done" },
-  { label: "المراجعة", state: "current" },
-  { label: "القرار", state: "pending" },
-];
-
 export default function HomePage() {
   return (
     <div className="home-flow">
       <section className="home-hero">
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-[1.05fr_.95fr] lg:py-28">
+        <div className="home-hero-inner mx-auto max-w-7xl px-6 py-20 lg:grid lg:grid-cols-[1.25fr_1.2fr] lg:items-center lg:gap-12 lg:py-28">
           <div className="text-center lg:text-right">
             <span className="section-kicker">رحلة تمويل واضحة من التحليل حتى المتابعة</span>
             <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.3] text-[#0F172A] md:text-[3.25rem]">
@@ -69,63 +55,79 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="home-product-preview" aria-hidden="true">
-            <div className="home-preview-window">
-              <div className="home-preview-topbar">
-                <div className="home-preview-brand">
-                  <span className="home-preview-brand-mark" />
-                  <span>لوحة تقييم التمويل</span>
-                </div>
-                <span className="home-preview-pill">قيد المراجعة</span>
-              </div>
+          <div className="home-hero-illustration" aria-hidden="true">
+            <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+              <rect x="6" y="12" width="388" height="296" rx="24" fill="rgba(15, 40, 78, 0.42)" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1.2" />
+              <rect x="6" y="12" width="388" height="296" rx="24" fill="url(#heroGlass)" />
 
-              <div className="home-preview-body">
-                <div className="home-preview-score-card">
-                  <div>
-                    <p className="home-preview-label">درجة التمويل</p>
-                    <p className="home-preview-score">78</p>
-                    <p className="home-preview-tier">مخاطر متوسطة — ضمن الحدود المقبولة</p>
-                  </div>
-                  <div className="home-preview-ring" role="presentation">
-                    <svg viewBox="0 0 80 80">
-                      <circle cx="40" cy="40" r="32" className="home-preview-ring-track" />
-                      <circle cx="40" cy="40" r="32" className="home-preview-ring-fill" />
-                    </svg>
-                  </div>
-                </div>
+              <rect x="22" y="30" width="52" height="260" rx="14" fill="rgba(8, 28, 58, 0.35)" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
 
-                <div className="home-preview-metrics">
-                  {previewMetrics.map((metric) => (
-                    <div key={metric.label} className="home-preview-metric">
-                      <span>{metric.label}</span>
-                      <strong>{metric.value}</strong>
-                      <em>{metric.status}</em>
-                    </div>
-                  ))}
-                </div>
+              <rect x="32" y="46" width="32" height="32" rx="8" fill="rgba(12, 36, 72, 0.5)" stroke="#d88945" strokeWidth="1.4" />
+              <g transform="translate(36 50)">
+                <rect x="3" y="3" width="18" height="18" rx="4" fill="#0B1F3A" />
+                <path
+                  d="M6 14h2.5l1.5-5 2.5 8 2-6 1.5 3H18"
+                  stroke="#C9793B"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </g>
 
-                <div className="home-preview-footer">
-                  <div className="home-preview-timeline">
-                    {previewTimeline.map((step) => (
-                      <div
-                        key={step.label}
-                        className={`home-preview-step home-preview-step--${step.state}`}
-                      >
-                        <span />
-                        <p>{step.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="home-preview-decision">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <div>
-                      <p>ملخص القرار</p>
-                      <span>موافقة مشروطة — بانتظار مستندات الضمان</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <circle cx="54" cy="104" r="2.4" fill="rgba(255,255,255,0.35)" />
+              <circle cx="54" cy="116" r="2.4" fill="rgba(255,255,255,0.35)" />
+              <circle cx="42" cy="104" r="2.4" fill="rgba(255,255,255,0.35)" />
+              <circle cx="42" cy="116" r="2.4" fill="rgba(255,255,255,0.35)" />
+
+              <circle cx="48" cy="148" r="10" stroke="rgba(255,255,255,0.28)" strokeWidth="2.5" />
+              <circle cx="48" cy="148" r="10" stroke="#d88945" strokeWidth="2.5" strokeDasharray="20 42" strokeLinecap="round" transform="rotate(-35 48 148)" />
+
+              <rect x="40" y="176" width="5" height="16" rx="1" fill="rgba(255,255,255,0.22)" />
+              <rect x="47" y="182" width="5" height="10" rx="1" fill="rgba(255,255,255,0.18)" />
+              <rect x="54" y="170" width="5" height="22" rx="1" fill="rgba(255,255,255,0.24)" />
+
+              <rect x="38" y="210" width="24" height="28" rx="5" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" />
+              <line x1="42" y1="218" x2="58" y2="218" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeLinecap="round" />
+              <line x1="42" y1="225" x2="56" y2="225" stroke="rgba(255,255,255,0.16)" strokeWidth="1.2" strokeLinecap="round" />
+              <line x1="42" y1="232" x2="54" y2="232" stroke="rgba(255,255,255,0.14)" strokeWidth="1.2" strokeLinecap="round" />
+
+              <rect x="88" y="30" width="142" height="128" rx="16" fill="rgba(10, 32, 64, 0.38)" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1" />
+              <circle cx="130" cy="86" r="26" stroke="rgba(100, 140, 190, 0.45)" strokeWidth="5.5" />
+              <circle cx="130" cy="86" r="26" stroke="#5b8ec4" strokeWidth="5.5" strokeDasharray="32 130" strokeLinecap="round" transform="rotate(-60 130 86)" />
+              <rect x="168" y="70" width="44" height="6" rx="3" fill="rgba(255,255,255,0.14)" />
+              <rect x="168" y="84" width="34" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
+              <rect x="168" y="98" width="38" height="6" rx="3" fill="rgba(255,255,255,0.08)" />
+
+              <rect x="242" y="30" width="142" height="128" rx="16" fill="rgba(10, 32, 64, 0.38)" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1" />
+              <path d="M258 128 L280 108 L300 116 L322 86 L348 72" stroke="rgba(120, 165, 210, 0.55)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="258" cy="128" r="3.5" fill="rgba(255,255,255,0.35)" />
+              <circle cx="280" cy="108" r="3.5" fill="rgba(255,255,255,0.35)" />
+              <circle cx="300" cy="116" r="3.5" fill="rgba(255,255,255,0.35)" />
+              <circle cx="322" cy="86" r="3.5" fill="rgba(255,255,255,0.35)" />
+              <circle cx="348" cy="72" r="3.5" fill="rgba(255,255,255,0.35)" />
+
+              <rect x="88" y="170" width="142" height="128" rx="16" fill="rgba(10, 32, 64, 0.38)" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1" />
+              <rect x="104" y="252" width="12" height="24" rx="2" fill="rgba(80, 120, 170, 0.35)" />
+              <rect x="122" y="236" width="12" height="40" rx="2" fill="rgba(90, 135, 185, 0.42)" />
+              <rect x="140" y="244" width="12" height="32" rx="2" fill="rgba(70, 110, 160, 0.32)" />
+              <rect x="158" y="226" width="12" height="50" rx="2" fill="rgba(100, 145, 195, 0.48)" />
+              <rect x="176" y="234" width="12" height="42" rx="2" fill="rgba(85, 125, 175, 0.38)" />
+              <rect x="194" y="220" width="12" height="56" rx="2" fill="rgba(95, 140, 190, 0.45)" />
+
+              <rect x="242" y="170" width="142" height="128" rx="16" fill="rgba(10, 32, 64, 0.38)" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1" />
+              <rect x="260" y="196" width="62" height="6" rx="3" fill="rgba(255,255,255,0.12)" />
+              <rect x="260" y="216" width="82" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
+              <rect x="260" y="236" width="52" height="6" rx="3" fill="rgba(255,255,255,0.12)" />
+              <rect x="260" y="256" width="70" height="6" rx="3" fill="rgba(255,255,255,0.08)" />
+              <circle cx="254" cy="239" r="3.5" fill="#d88945" />
+
+              <defs>
+                <linearGradient id="heroGlass" x1="200" y1="12" x2="200" y2="308" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="rgba(20, 55, 100, 0.18)" />
+                  <stop offset="1" stopColor="rgba(8, 22, 48, 0.32)" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
         </div>
       </section>

@@ -7,6 +7,8 @@ import AuthShell from "@/components/AuthShell";
 
 export default function BankLoginPage() {
   const router = useRouter();
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -17,17 +19,31 @@ export default function BankLoginPage() {
     setBusy(true);
     setError("");
     try {
-      const response = await fetch(`/api/bank/auth/login`, {
+      const endpoint =
+        mode === "login" ? "/api/bank/auth/login" : "/api/bank/auth/register";
+      const payload =
+        mode === "login" ? { email, password } : { name, email, password };
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
       const json = await response.json();
-      if (!response.ok) throw new Error(json.error || "تعذر تسجيل الدخول.");
+      if (!response.ok)
+        throw new Error(
+          json.error ||
+            (mode === "login" ? "تعذر تسجيل الدخول." : "تعذر إنشاء الحساب."),
+        );
       router.replace("/bank/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "تعذر تسجيل الدخول.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : mode === "login"
+            ? "تعذر تسجيل الدخول."
+            : "تعذر إنشاء الحساب.",
+      );
     } finally {
       setBusy(false);
     }
@@ -47,6 +63,19 @@ export default function BankLoginPage() {
       panelSubtitle="أدخل بيانات الاعتماد المعتمدة للوصول إلى لوحة الائتمان والعمليات."
     >
       <form onSubmit={submit} className="space-y-5">
+        {mode === "signup" && (
+          <label>
+            <span className="auth-field-label">الاسم</span>
+            <input
+              className="fp-input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </label>
+        )}
+
         <label>
           <span className="auth-field-label">البريد الإلكتروني</span>
           <input
@@ -75,7 +104,19 @@ export default function BankLoginPage() {
 
         <button disabled={busy} className="portal-primary-btn h-12 w-full text-sm disabled:opacity-50">
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          تسجيل الدخول
+          {mode === "login" ? "تسجيل الدخول" : "إنشاء الحساب"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMode(mode === "login" ? "signup" : "login");
+            setError("");
+          }}
+          className="bank-auth-mode-toggle"
+          tabIndex={-1}
+        >
+          {mode === "login" ? "إنشاء حساب جديد" : "لدي حساب بالفعل"}
         </button>
 
         <div className="auth-trust-row">
